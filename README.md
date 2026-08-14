@@ -1,157 +1,722 @@
-# Dukaan Dekho — Run this on your PC
+Getsy
 
-This is the complete, working project. Everything below is real — the backend is a
-real Node.js + MongoDB server, and the frontend page talks to it live (not mock data).
+A local-first marketplace that helps customers discover nearby shops, check real product availability, reserve items, and connect with local shop owners.
 
-## 1. Folder layout (exactly what you should have)
+Getsy is a full-stack web platform built around a simple problem: local customers often do not know which nearby shop has the product they need, while small shop owners have limited digital visibility.
 
-```
-getsee/
-├── docker-compose.yml
-├── README.md                 (this file)
+Instead of replacing local stores, Getsy gives them a digital catalogue and lets customers discover, compare, reserve, and navigate to nearby shops.
+
+Highlights
+
+Customer and shop-owner accounts with role-based access
+
+Product discovery by category, type, and subtype
+
+Real product catalogue and stock stored in MongoDB
+
+Per-size stock tracking
+
+Atomic stock decrement during reservations to prevent double-booking the last unit
+
+48-hour reservations with automatic expiry and stock restoration
+
+Customer wishlist
+
+Shop reviews and ratings
+
+Shop-owner dashboard for catalogue and reservation management
+
+Product and shop image uploads
+
+Customer and shop location selection
+
+Nearby-shop discovery using distance calculations
+
+OpenStreetMap and Leaflet map integration
+
+Google Maps directions links
+
+Community requests where customers can ask local shops for products
+
+JWT access and refresh token authentication
+
+Docker Compose setup with MongoDB
+
+Seed/demo data for local testing
+
+The problem
+
+Local commerce has a visibility problem.
+
+A customer may need a specific product but still have to:
+
+Visit multiple shops.
+
+Call different shop owners.
+
+Ask whether the product is actually in stock.
+
+Travel to a shop only to discover that the item or size is unavailable.
+
+At the same time, many small local shops have inventory that is difficult for customers to discover online.
+
+Getsy addresses the gap between local inventory and customer discovery.
+
+How Getsy works
+
+Customer
+   |
+   | Select location
+   v
+Discover nearby shops
+   |
+   | Browse real catalogues
+   v
+Find product + size + stock
+   |
+   | Reserve
+   v
+Stock is atomically decremented
+   |
+   | 48-hour reservation
+   v
+Visit shop / get directions
+
+Shop owners use the other side of the platform:
+
+Shop Owner
+   |
+   v
+Register shop
+   |
+   v
+Set shop location
+   |
+   v
+Add products + stock + images
+   |
+   v
+Receive customer reservations
+   |
+   v
+Manage catalogue and shop activity
+
+Core features
+
+Customer experience
+
+Customer registration and login
+
+Location selection
+
+Nearby shop discovery
+
+Category-based browsing
+
+Product detail pages
+
+Size-specific stock visibility
+
+Product reservations
+
+Reservation status tracking
+
+Automatic token refresh
+
+Wishlist
+
+Shop reviews and ratings
+
+Google Maps directions
+
+Community product requests
+
+Shop owner experience
+
+Owner registration with shop creation
+
+Shop profile and location
+
+Product catalogue management
+
+Product image uploads
+
+Size and stock management
+
+Reservation management
+
+Owner dashboard
+
+Shop-level activity and review information
+
+Inventory and reservation logic
+
+Getsy does not simply create a reservation and hope that stock remains available.
+
+When a customer reserves an item, the backend performs an atomic conditional MongoDB update:
+
+Reserve request
+      |
+      v
+Check requested size stock > 0
+      |
+      +---- No ----> Reservation rejected
+      |
+      +---- Yes ---> Stock decremented atomically
+                         |
+                         v
+                    Reservation created
+
+This prevents two simultaneous customers from successfully reserving the same final unit.
+
+Active reservations are also limited per customer, and reservations expire automatically after the configured reservation period.
+
+Location and maps
+
+Getsy uses:
+
+Leaflet for interactive maps
+
+OpenStreetMap map tiles
+
+Nominatim for place-name geocoding
+
+Latitude/longitude coordinates stored with users and shops
+
+Distance calculations for nearby-shop discovery
+
+Google Maps links for turn-by-turn directions
+
+The map layer does not require a Google Maps API key.
+
+Nominatim is a public community service and is rate-limited. It should not be treated as an unlimited production geocoding API.
+
+Technology stack
+
+Frontend
+
+React 18
+
+React Router
+
+Vite
+
+JavaScript / JSX
+
+CSS
+
+Leaflet
+
+Lucide React
+
+Backend
+
+Node.js
+
+Express
+
+MongoDB
+
+Mongoose
+
+JWT
+
+bcryptjs
+
+Multer
+
+CORS
+
+dotenv
+
+Infrastructure
+
+Docker
+
+Docker Compose
+
+MongoDB 7
+
+Architecture
+
+┌───────────────────────────────┐
+│          React Frontend       │
+│                               │
+│ Landing / Discovery / Shop    │
+│ Product / Auth / Dashboards   │
+│ Community / Location / Mobile │
+└───────────────┬───────────────┘
+                │
+                │ HTTP / JSON
+                │ JWT
+                ▼
+┌───────────────────────────────┐
+│       Express REST API        │
+│                               │
+│ Auth                          │
+│ Browse                        │
+│ Bookings                      │
+│ Owner                         │
+│ Community                     │
+│ Users                         │
+│ Wishlist                      │
+│ Reviews                       │
+└───────────────┬───────────────┘
+                │
+                │ Mongoose
+                ▼
+┌───────────────────────────────┐
+│           MongoDB             │
+│                               │
+│ Users                         │
+│ Shops                         │
+│ Catalogue Items               │
+│ Bookings                      │
+│ Reviews                       │
+│ Wishlists                     │
+│ Community Requests            │
+└───────────────────────────────┘
+
+External services:
+Leaflet / OpenStreetMap / Nominatim
+Google Maps directions
+
+Project structure
+
+getsee_7/
 ├── backend/
+│   ├── config/
+│   │   └── db.js
+│   ├── jobs/
+│   │   └── expireReservations.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   └── upload.js
+│   ├── models/
+│   │   ├── Booking.js
+│   │   ├── CatalogueItem.js
+│   │   ├── CommunityRequest.js
+│   │   ├── Review.js
+│   │   ├── Shop.js
+│   │   ├── User.js
+│   │   └── Wishlist.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── bookings.js
+│   │   ├── browse.js
+│   │   ├── community.js
+│   │   ├── owner.js
+│   │   ├── reviews.js
+│   │   ├── users.js
+│   │   └── wishlist.js
+│   ├── utils/
+│   │   └── geocoder.js
+│   ├── .env.example
 │   ├── Dockerfile
 │   ├── package.json
-│   ├── server.js
 │   ├── seed.js
-│   ├── .env
-│   ├── .env.example
-│   ├── uploads/               (product photos get saved here automatically)
-│   ├── config/db.js
-│   ├── middleware/auth.js
-│   ├── middleware/upload.js
-│   ├── jobs/expireReservations.js
-│   ├── models/  (User.js, Shop.js, CatalogueItem.js, Booking.js, Review.js, CommunityRequest.js)
-│   └── routes/  (auth.js, browse.js, bookings.js, owner.js, community.js)
-└── frontend/
-    └── index.html            (the whole website — one file)
-```
+│   └── server.js
+│
+├── frontend/
+│   ├── public/
+│   │   └── images/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── pages/
+│   │   ├── services/
+│   │   ├── styles/
+│   │   └── utils/
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+│
+├── scripts/
+├── scratch/
+├── docker-compose.yml
+├── .gitignore
+└── README.md
 
-You don't need to create or rename anything — just save the `getsee` folder exactly
-as downloaded, onto your Desktop.
+Getting started
 
----
+There are two supported development paths.
 
-## 2. Easiest way to run it: Docker Desktop (recommended)
+Option A: Docker Compose
 
-You only need **one program installed**: Docker Desktop.
+This is the easiest way to run the complete backend and database stack.
 
-1. Install Docker Desktop: https://www.docker.com/products/docker-desktop (free)
-2. Open it once so it's running in the background.
-3. Open a terminal (Mac: Terminal app / Windows: PowerShell or Command Prompt).
-4. Go to the folder:
-   ```
-   cd Desktop/getsee
-   ```
-5. Run:
-   ```
-   docker-compose up
-   ```
-   Wait about 30–60 seconds the first time (it downloads MongoDB and installs the backend).
-   You'll see a line that says `[server] Dukaan Dekho API running on http://localhost:5000`.
-6. Now open the **frontend**: go to the `getsee/frontend` folder and **double-click `index.html`**.
-   It opens in your browser and is already talking to the backend.
+Prerequisites
 
-To stop everything later: go back to the terminal and press `Ctrl + C`, or run
-`docker-compose down`.
+Install:
 
-### Demo logins (already seeded into the database)
+Docker Desktop
 
-| Role | Email | Password |
-|---|---|---|
-| Customer | `priya@customer.test` | `password123` |
-| Owner — Meena Fashion House (clothes) | `meena@shop.test` | `password123` |
-| Owner — Rahul's Footwear (shoes) | `rahul@shop.test` | `password123` |
-| Owner — Om Jewellers (ornaments) | `om@shop.test` | `password123` |
+Git
 
-You can also just click "Register" and create your own customer or owner account —
-that goes into the real database too.
+Then clone the repository:
 
-**Note:** the Docker setup checks for the 3 demo shops every time you run `docker-compose up`
-and only creates the ones that don't exist yet — it never deletes or resets anything, so your
-real bookings, products, and uploaded photos are always safe across restarts.
+git clone https://github.com/sahilvarpe8256-crypto/Getsy.git
+cd Getsy
 
----
+Start the application stack:
 
-## 3. Alternative: running without Docker (if you'd rather not install Docker)
+docker compose up --build
 
-You'd need two things installed instead: **Node.js** (https://nodejs.org, get the LTS version)
-and **MongoDB Community Server** (https://www.mongodb.com/try/download/community) running locally.
+The backend runs on:
 
-1. Install both, then make sure MongoDB is running (it usually starts automatically as a service).
-2. Open a terminal in `getsee/backend` and run:
-   ```
-   npm install
-   npm run seed
-   npm start
-   ```
-3. You should see `Dukaan Dekho API running on http://localhost:5000`.
-4. Open `getsee/frontend/index.html` by double-clicking it.
+http://localhost:5000
 
----
+The API health endpoint is:
 
-## 4. What's actually real here vs. what's simplified
+http://localhost:5000/api/v1/health
 
-**Real:** registration/login (passwords hashed, JWT auth), browsing by category → type →
-subtype, live per-size stock that decrements the instant someone books (and can't go negative
-even if two people click at once), owner dashboard pulling real numbers from the database,
-community requests/replies, automatic reservation expiry after 48 hours releasing stock back.
+The Docker setup starts:
 
-**Real, from earlier updates too:** owners can upload real product photos (saved locally to
-`backend/uploads/`, no cloud account needed), and shops require no manual "verification" step
-to appear in search — both are already working, this update just adds the map layer on top.
+MongoDB on port 27017
 
-**Now includes:** a real map, with no API key needed. It uses OpenStreetMap (via Leaflet.js)
-instead of Google Maps — visually it's the same idea (a street map with a search box and a
-draggable pin), but completely free and with nothing to sign up for.
+Express backend on port 5000
 
-*Fixed in this update:* the map now loads from a more reliable CDN, there are manual
-latitude/longitude number fields as a backup in case the map itself ever fails to load on
-your network, and the "Add a new product" form now requires a stock quantity up front instead
-of silently defaulting to 0 (out of stock) when left blank.
+The MongoDB data is persisted in the Docker volume dukaan_mongo_data.
 
-- Right after registering, both customers and owners are taken to a map screen: search your
-  city/village, then drag the pin (or click the map) to fine-tune your exact spot.
-- Customers can revisit this anytime via **"📍 My location"** in the top bar. Owners get
-  **"📍 Shop location"** the same way, plus a reminder banner on their dashboard if they
-  haven't pinned it yet.
-- Once your location is set, shop search results show real distance from you (in km) and
-  sort nearest-first, and the shop page + your active bookings both get a **"🧭 Get
-  directions"** button that opens Google Maps for turn-by-turn directions from wherever you
-  are when you tap it.
-- The demo data is set around **Sangamner, Maharashtra** as requested — the 3 demo shops are
-  pinned there, and the demo customer's home location is placed roughly 10 km outside town to
-  match the "village customer" scenario. All coordinates are approximate/for-demo, since real
-  ones get set by actually using the map picker.
+Stop the stack with:
 
-One honest caveat: the place-name search uses Nominatim, a free community geocoding service —
-it's reliable for normal use but is rate-limited and occasionally won't recognize a very small
-or obscure village by name. If that happens, just search for the nearest town instead and then
-drag the pin the rest of the way to the exact spot.
+docker compose down
 
-**Still simplified for this version** (on purpose, so you have something running today):
-- Community requests are text-only for now — the same upload approach used for products can
-  be added there too.
-- No real payment processing — the architecture doc covers how to add Razorpay when you're ready.
+Option B: Run locally without Docker
 
-These are all straightforward to add later without changing anything else — just let me
-know when you want to tackle the next one.
+Prerequisites
 
-## 5. If something doesn't work
+Install:
 
-- **"Cannot reach API server" banner in the browser:** the backend isn't running. Check the
-  terminal running `docker-compose up` for errors, or make sure MongoDB is running if you
-  went the non-Docker route.
-- **A shop you registered doesn't show up when browsing as a customer:** this was a bug in
-  an earlier version (new shops needed manual "verification" that nothing ever granted).
-  It's fixed for any *new* registration. If you already created a shop before this fix,
-  run this once to unlock it:
-  - Docker: `docker-compose exec backend npm run verify-shops`
-  - Non-Docker: `cd backend && npm run verify-shops`
-- **The map doesn't load, or place search does nothing:** unlike the rest of this app, the
-  map tiles and place search need an internet connection (they come from OpenStreetMap's free
-  public servers, not your local backend). Everything else — logging in, browsing, booking —
-  still works offline once the page and its scripts have loaded once.
-- **Port already in use:** something else on your PC is using port 5000 or 27017. Close it,
-  or change `PORT`/`ports:` in `docker-compose.yml` and update the `API` constant near the
-  top of `frontend/index.html` to match.
+Node.js LTS
+
+MongoDB Community Server
+
+Git
+
+Backend
+
+Open a terminal in backend:
+
+cd backend
+npm install
+
+Create your environment file:
+
+backend/.env
+
+Use .env.example as the template.
+
+Then seed the demo data:
+
+npm run seed
+
+Start the backend:
+
+npm start
+
+For development with automatic restart:
+
+npm run dev
+
+The API will run on:
+
+http://localhost:5000
+
+Frontend
+
+Open another terminal:
+
+cd frontend
+npm install
+npm run dev
+
+Vite will display the local development URL in the terminal, normally:
+
+http://localhost:5173
+
+For a production build:
+
+npm run build
+
+To preview the production build:
+
+npm run preview
+
+Environment variables
+
+Never commit your real .env file.
+
+The repository contains:
+
+backend/.env.example
+
+Typical backend configuration includes:
+
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/dukaan
+JWT_ACCESS_SECRET=replace_with_a_real_secret
+JWT_REFRESH_SECRET=replace_with_a_real_secret
+ACCESS_TOKEN_TTL=15m
+REFRESH_TOKEN_TTL=30d
+CLIENT_ORIGIN=http://localhost:5173
+RESERVATION_HOURS=48
+
+For Docker Compose, the backend receives its MongoDB connection string and other development settings from docker-compose.yml.
+
+For anything beyond local development, use strong secrets and environment-specific configuration.
+
+Demo data
+
+The seed script creates demo users and shops for testing.
+
+Role
+
+Email
+
+Password
+
+Customer
+
+priya@customer.test
+
+password123
+
+Owner
+
+meena@shop.test
+
+password123
+
+Owner
+
+rahul@shop.test
+
+password123
+
+Owner
+
+om@shop.test
+
+password123
+
+These credentials are for local demonstration only.
+
+Do not use these credentials in a production deployment.
+
+Demo shop data is centred around Sangamner, Maharashtra.
+
+API overview
+
+The Express API is versioned under:
+
+/api/v1
+
+Main route groups include:
+
+Route
+
+Purpose
+
+/api/v1/auth
+
+Registration, login, token refresh
+
+/api/v1
+
+Browse shops and catalogue
+
+/api/v1/bookings
+
+Customer reservations
+
+/api/v1/owner
+
+Shop-owner operations
+
+/api/v1/community
+
+Community product requests and replies
+
+/api/v1/users
+
+User/location operations
+
+/api/v1/wishlist
+
+Customer wishlist
+
+/api/v1
+
+Reviews and related operations
+
+/api/v1/health
+
+Backend health check
+
+Authentication
+
+Getsy uses JWT-based authentication.
+
+The authentication flow includes:
+
+User registers or logs in.
+
+Backend validates credentials.
+
+Passwords are stored as bcrypt hashes.
+
+Backend issues an access token and refresh token.
+
+Frontend sends the access token using the Authorization header.
+
+When an access token expires, the frontend attempts to refresh it.
+
+Failed refresh authentication logs the user out locally.
+
+Role-based authorization separates customer and owner operations.
+
+Reservation lifecycle
+
+A reservation follows this lifecycle:
+
+Available
+   |
+   v
+Reserved
+   |
+   +--------------------+
+   |                    |
+   v                    v
+Confirmed in store    48-hour expiry
+   |                    |
+   v                    v
+Paid / completed     Stock restored
+
+The current implementation supports reservation, expiry, cancellation, in-store confirmation, and paid states in the booking model.
+
+Current limitations
+
+This repository is a working application prototype, not a finished commercial marketplace.
+
+Current limitations include:
+
+No real online payment gateway
+
+Community requests are text-first
+
+Local product uploads use the backend filesystem
+
+Public Nominatim usage is rate-limited
+
+No production-grade object storage
+
+No production deployment configuration
+
+No automated CI/CD pipeline
+
+No comprehensive automated test suite
+
+Demo credentials are intentionally included for local testing
+
+These limitations are architectural boundaries for the current version, not hidden functionality.
+
+Roadmap
+
+Potential next-stage improvements:
+
+Razorpay or another payment gateway
+
+Cloud object storage for product images
+
+Production-grade geocoding and maps infrastructure
+
+Push notifications for reservation updates
+
+SMS/WhatsApp notifications
+
+Advanced inventory analytics
+
+Shop-owner sales analytics
+
+Search ranking and recommendation systems
+
+Automated tests and CI
+
+Production deployment
+
+Rate limiting and stronger API security
+
+Admin moderation and verification workflows
+
+Community image attachments
+
+Multi-language support
+
+Security notes
+
+Before deploying publicly:
+
+Replace all development JWT secrets.
+
+Configure a restricted CLIENT_ORIGIN.
+
+Use HTTPS.
+
+Move uploaded media to managed object storage.
+
+Add API rate limiting.
+
+Add production logging and monitoring.
+
+Review CORS configuration.
+
+Do not expose database credentials.
+
+Do not commit .env files.
+
+Do not use the demo passwords outside local testing.
+
+Development commands
+
+Backend
+
+npm install
+npm run dev
+npm start
+npm run seed
+npm run verify-shops
+
+Frontend
+
+npm install
+npm run dev
+npm run build
+npm run preview
+
+Docker
+
+docker compose up --build
+docker compose down
+
+License
+
+No open-source license has currently been declared for this repository.
+
+Until a license is added, the source code should not be assumed to be freely reusable, modified, or redistributed.
+
+Project status
+
+Current status: Working full-stack prototype
+
+Frontend: React + Vite
+
+Backend: Node.js + Express
+
+Database: MongoDB
+
+Authentication: JWT + bcrypt
+
+Maps: Leaflet + OpenStreetMap + Nominatim
+
+Containerization: Docker Compose
