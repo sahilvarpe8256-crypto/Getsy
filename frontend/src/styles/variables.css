@@ -1,0 +1,47 @@
+:root {
+  /* Color Palette inspired by Getsy Logo & Flowstep UI */
+  --color-navy: #0F172A;
+  --color-navy-muted: #475569;
+  --color-navy-subtle: #64748B;
+  
+  --color-primary: #2563EB;
+  --color-primary-hover: #1D4ED8;
+  --color-primary-soft: #EFF6FF;
+  --color-primary-border: #BFDBFE;
+  
+  --color-teal: #0D9488;
+  --color-teal-hover: #0F766E;
+  --color-teal-soft: #F0FDFA;
+  --color-teal-border: #99F6E4;
+  
+  --color-amber: #D97706;
+  --color-amber-soft: #FFFBEB;
+  
+  --color-green: #16A34A;
+  --color-green-soft: #DCFCE7;
+  --color-red: #DC2626;
+  --color-red-soft: #FEE2E2;
+  
+  --color-bg: #F8FAFC;
+  --color-panel: #FFFFFF;
+  --color-border: #E2E8F0;
+  --color-border-hover: #CBD5E1;
+  
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Shadows & Elevation */
+  --shadow-sm: 0 1px 2px 0 rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(15, 23, 42, 0.08), 0 2px 4px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lg: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --shadow-xl: 0 20px 30px -10px rgba(15, 23, 42, 0.12);
+  
+  /* Borders & Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-full: 9999px;
+  
+  /* Layout Spacing */
+  --max-width: 1200px;
+}

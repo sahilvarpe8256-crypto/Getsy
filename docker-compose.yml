@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: dukaan-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - dukaan_mongo_data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+    container_name: dukaan-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://mongodb:27017/dukaan
+      - JWT_ACCESS_SECRET=change_this_dev_secret_access
+      - JWT_REFRESH_SECRET=change_this_dev_secret_refresh
+      - ACCESS_TOKEN_TTL=15m
+      - REFRESH_TOKEN_TTL=30d
+      - CLIENT_ORIGIN=*
+      - RESERVATION_HOURS=48
+    volumes:
+      - ./backend/uploads:/app/uploads
+    # Runs the seed script once, then starts the server, every time the container starts.
+    # Safe to leave as-is - seed.js clears and re-adds the 3 demo shops each run
+    # (uploaded images themselves are kept, since they live in the volume above,
+    # not in MongoDB - only the *demo* catalogue items get reset).
+    command: sh -c "node seed.js && node server.js"
+
+volumes:
+  dukaan_mongo_data:

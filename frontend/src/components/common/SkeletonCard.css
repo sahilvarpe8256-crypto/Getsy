@@ -1,0 +1,139 @@
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #F1F5F9 0%,
+    #E2E8F0 50%,
+    #F1F5F9 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite linear;
+  border-radius: var(--radius-md, 10px);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shop-card,
+.skeleton-product-card {
+  background: white;
+  border: 1px solid var(--border-color, #E2E8F0);
+  border-radius: var(--radius-md, 14px);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.skeleton-image {
+  height: 180px;
+  width: 100%;
+}
+
+.skeleton-image.product {
+  height: 200px;
+}
+
+.skeleton-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skeleton-line {
+  height: 14px;
+  width: 100%;
+}
+
+.skeleton-line.title {
+  height: 20px;
+  width: 75%;
+}
+
+.skeleton-line.text {
+  height: 14px;
+  width: 90%;
+}
+
+.skeleton-line.pill {
+  height: 26px;
+  width: 40%;
+  border-radius: 20px;
+}
+
+.skeleton-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.skeleton-line.price {
+  height: 22px;
+  width: 35%;
+}
+
+.skeleton-line.badge {
+  height: 24px;
+  width: 45%;
+  border-radius: 20px;
+}
+
+.skeleton-detail-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  background: white;
+  padding: 2.5rem;
+  border-radius: var(--radius-lg, 20px);
+  border: 1px solid var(--border-color, #E2E8F0);
+}
+
+.skeleton-image.hero-img {
+  height: 380px;
+  border-radius: 16px;
+}
+
+.skeleton-hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.skeleton-line.lg-title {
+  height: 32px;
+  width: 85%;
+}
+
+.skeleton-line.subtitle {
+  height: 18px;
+  width: 60%;
+}
+
+.skeleton-line.price-lg {
+  height: 36px;
+  width: 40%;
+}
+
+.skeleton-block {
+  height: 120px;
+  width: 100%;
+  border-radius: 12px;
+}
+
+@media (max-width: 768px) {
+  .skeleton-detail-hero {
+    grid-template-columns: 1fr;
+  }
+}
